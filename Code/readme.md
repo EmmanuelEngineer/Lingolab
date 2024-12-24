@@ -1,0 +1,5 @@
+# Come interpretare il risultato di VoiceToText_PlusPronunciation_PlusFluency.py
+
+`print_colored_text` stampa come risultato in colore rosso - giallo - bianco rispettivamente le pronuncie che sono cattive - accettabili - buone. Il treshold di tali decisioni è stato determinato a mano usando il dataset [speechocean762](https://huggingface.co/datasets/mispeech/speechocean762), ovvero una raccolta di registrazioni di persone che stanno cercando di parlare inglese (e che non è la loro lingua natia).
+
+`print_colored_fluency` stampa come risultato in colore blu - cyan - bianco rispettivamente la velocità in cui sono state pronunciate le parole: lente - normali - veloci. Ache questo threshold decisionale è stato scelto a mano con il medesimo dataset. Il valore di `fluency` viene ricavato estraendo la quantità di tempo che è stata presa dall'utente (fine - inizio) e dividendola per la quantità di caratteri presenti nella parola.
