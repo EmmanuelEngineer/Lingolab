@@ -16,7 +16,7 @@ class TextPronunciationFluency:
             audio,
             language=language,
             task=task,
-            vad="auditok",
+            vad="silero",  # auditok
             detect_disfluencies=False,
             compute_word_confidence=True
         )
