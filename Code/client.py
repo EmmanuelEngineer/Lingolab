@@ -8,8 +8,6 @@ import time
 import copy
 
 
-
-
 class Gaze_Capture_Client:
     def __init__(self, fps=11, cap=cv2.VideoCapture(0), server_ip='127.0.0.1', server_port=5002):
         # Initialize socket
@@ -47,9 +45,15 @@ class Gaze_Capture_Client:
             if (response_dict["status"] != "error"):
                 gaze_distance = response_dict["score"]
                 with self.lock:  # Ensure thread-safe access
+                    if results_dict["number_of_samples"] == 0:
+                        results_dict["number_of_samples"] = 1
+                        results_dict["average_score"] = gaze_distance
+                        
                     old_average_score = results_dict["average_score"]
+                    
                     results_dict["average_score"] = ((
-                        old_average_score*results_dict["number_of_samples"]) + gaze_distance)/results_dict["number_of_samples"]
+                        old_average_score*results_dict["number_of_samples"]) + gaze_distance)/(results_dict["number_of_samples"]+1)
+                    
                     results_dict["number_of_samples"] = results_dict["number_of_samples"] + 1
 
     def start_capture(self):
@@ -84,4 +88,4 @@ if __name__ == "__main__":
     gz_client.start_capture()
     time.sleep(10)  # Simulate a time-consuming operation
     print(gz_client.stop_capture())
-    del gz_client #for a secure release of resources
+    del gz_client  # for a secure release of resources
