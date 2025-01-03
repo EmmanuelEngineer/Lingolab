@@ -84,3 +84,4 @@ if __name__ == "__main__":
     gz_client.start_capture()
     time.sleep(10)  # Simulate a time-consuming operation
     print(gz_client.stop_capture())
+    del gz_client #for a secure release of resources
