@@ -19,7 +19,8 @@ import socket
 import struct
 import pickle
 
-
+CENTER_PITCH = -1.34
+CENTER_YAW = 0
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -220,9 +221,9 @@ def find_nearest(array, value):
 def error_to_center(angles):
     pitch = np.array([angles["reye"][0], angles["leye"][0]])
     yaw = np.array([angles["reye"][1], angles["leye"][1]])
-    e_pitch = find_nearest(pitch, -1.34)
-    e_yaw = find_nearest(yaw, 0)
-    return e_pitch + e_yaw
+    n_pitch = find_nearest(pitch, CENTER_PITCH)
+    n_yaw = find_nearest(yaw, CENTER_YAW)
+    return np.abs(CENTER_PITCH - n_pitch) + np.abs(CENTER_YAW - n_yaw)
 
 def main():
     config = load_config()

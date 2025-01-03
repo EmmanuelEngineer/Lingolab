@@ -9,8 +9,8 @@ gaze_estimator:
   normalized_camera_distance: 0.6
 demo:
   use_camera: False
-  display_on_screen: True
-  wait_time: 1
+  display_on_screen: False
+  wait_time: 0
   video_path: './images/test2.jpg'
   output_dir: ''
   output_file_extension: mp4

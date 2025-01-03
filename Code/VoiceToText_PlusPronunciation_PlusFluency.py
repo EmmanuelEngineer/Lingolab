@@ -84,7 +84,7 @@ audio = whisper.load_audio("audio.wav")
 
 model = whisper.load_model("base", device="cpu")
 
-result = whisper.transcribe_timestamped(model, audio, language="en", task="transcribe", vad="auditok", detect_disfluencies=False, compute_word_confidence=True)
+result = whisper.transcribe_timestamped(model, audio, language="en", task="transcribe", vad="silero", detect_disfluencies=False, compute_word_confidence=True)
 
 print_colored_text(result)
 
