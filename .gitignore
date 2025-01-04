@@ -1,1 +1,9 @@
 */.venv
+/wav2vec2_checkpoints
+Code/run.sh
+Code/pronunciation.wav2
+Code/audio.wav
+pronunciation.wav2
+audio.wav
+/Code/pytorch_mpiigaze
+/Code/__pycache__

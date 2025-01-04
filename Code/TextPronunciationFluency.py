@@ -2,6 +2,7 @@ import sounddevice as sd
 import numpy as np
 import whisper_timestamped as whisper
 import scipy.io.wavfile as wavfile
+import string
 
 class TextPronunciationFluency:
     def __init__(self, model_name="base", device="cpu"):
@@ -31,23 +32,32 @@ class TextPronunciationFluency:
         return self.transcribe_audio(output_file)
 
     @staticmethod
-    def format_transcription(result):
-        output = ""
+    def format_words(result):
+        output = []
+        words = result['segments'][0]['words']
+        for word in words:
+            text = word['text'].strip().lower()
+            text = text.translate(str.maketrans('', '', string.punctuation))
+            output.append(text)
+        return output
+
+    @staticmethod
+    def format_confidence(result):
+        output = []
         words = result['segments'][0]['words']
         for word in words:
             confidence = word['confidence']
-            text = word['text']
-            output += f"{text} (Confidence: {confidence:.2f}) "
+            output.append(round(confidence, 2))
         return output
 
     @staticmethod
     def format_fluency(result):
-        output = ""
+        output = []
         words = result['segments'][0]['words']
         for word in words:
             text = word['text']
             duration = word['end'] - word['start']
             word_length = len(text)
             fluency = 1 if word_length == 0 else duration / word_length
-            output += f"{text} (Fluency: {fluency:.2f}) "
+            output.append(round(fluency, 2))
         return output
