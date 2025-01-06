@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2025-01-06T18:51:11.947Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.6.4 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" etag="uY-rN2XPQ-aRPiI7Hczr" version="24.6.4" type="device">
+<mxfile host="Electron" modified="2025-01-06T18:47:10.393Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.6.4 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" etag="kiLoXXxqdrmeFWC_TFpN" version="24.6.4" type="device">
   <diagram name="Page-1" id="5f0bae14-7c28-e335-631c-24af17079c00">
     <mxGraphModel dx="1223" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
       <root>
@@ -274,9 +274,6 @@
         </mxCell>
         <mxCell id="ispf3cTAjHFTwqw6l8b9-112" value="Shows timer" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="210" y="560" width="80" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="ispf3cTAjHFTwqw6l8b9-115" value="Metto un bottone al posto del timer di fine esercizio?" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fontFamily=Helvetica;fontSize=11;labelBackgroundColor=default;align=left;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="720" y="640" width="200" height="100" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
