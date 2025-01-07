@@ -25,6 +25,7 @@ class LingoLab(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
         self.current_exercise = 0
         self.sample_rate = 16000
+        self.pause = True
 
         # initialize the model for pronunciation feedback
         self.pronunciation_processor = TextPronunciationFluency()
@@ -298,7 +299,6 @@ class LingoLab(ctk.CTk):
     def submit_answer(self, event=None):
         # the feedback text is initiated in the center
         self.feedback_label = ctk.CTkLabel(self.exercise_frame, text="", font=("Arial", 20))
-        self.feedback_label.grid(row=2, column=0, padx=20, pady=(0,15), sticky="s")
 
         # the ground truth is loaded
         correct_answer = self.current_exercise_list[self.current_exercise][1].strip().lower()
@@ -335,7 +335,21 @@ class LingoLab(ctk.CTk):
             self.submit_button.destroy()
         # add in its place the feedback text, after two seconds get to the next exercise
         self.feedback_label.grid(row=1, column=0, padx=20, pady=(0,15), sticky="ew")
-        self.feedback_label.after(2000, lambda : self.next_exercise())
+        
+        if(self.pause):
+            self.pause_frame = ctk.CTkFrame(self.exercise_frame, corner_radius=10)
+            self.pause_frame.grid(row=2, column=0, padx=20, pady=(0,15), sticky="s")
+            self.pause_frame.grid_columnconfigure(0, weight=1)
+            self.pause_frame.grid_rowconfigure(0, weight=1)
+            self.pause_frame.grid_rowconfigure(1, weight=1)
+
+            self.pause_label = ctk.CTkLabel(self.pause_frame, text="It seems that you are tired, take a break!")
+            self.pause_label.grid(row=1, column=0, padx=20, pady=15, sticky="n")
+
+            self.end_pause = ctk.CTkButton(self.pause_frame, text="End break", command=lambda: (self.pause_frame.destroy(), self.next_exercise()))
+            self.end_pause.grid(row=2, column=0, padx=20, pady=(0,15), sticky="s")
+        else:
+            self.feedback_label.after(2000, lambda: self.next_exercise())
 
     def next_exercise(self):
         # remove the feedback label
