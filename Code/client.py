@@ -14,7 +14,7 @@ class Gaze_Capture_Client:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((server_ip, server_port))
         self.lock = threading.Lock()
-        self.stop_event = threading.Event()
+        self.stop_event = None
         self.worker_thread = None
         self.cap = cap
         self.fps = fps
@@ -25,7 +25,6 @@ class Gaze_Capture_Client:
             # Simulate a time-consuming operation
             time.sleep(time_between_frames)
             ret, frame = cap.read()
-            cv2.imshow('Client', frame)
             # Serialize the image
             data = pickle.dumps(frame)
 
@@ -41,25 +40,26 @@ class Gaze_Capture_Client:
             while len(response_data) < response_length:
                 response_data += self.client_socket.recv(4096)
             response_dict = pickle.loads(response_data)
-            print(f"Server response (dictionary): {response_dict}")
+            #print(f"Server response (dictionary): {response_dict}")
             if (response_dict["status"] != "error"):
                 gaze_distance = response_dict["score"]
                 with self.lock:  # Ensure thread-safe access
                     if results_dict["number_of_samples"] == 0:
                         results_dict["number_of_samples"] = 1
                         results_dict["average_score"] = gaze_distance
-                        
+
                     old_average_score = results_dict["average_score"]
-                    
+
                     results_dict["average_score"] = ((
                         old_average_score*results_dict["number_of_samples"]) + gaze_distance)/(results_dict["number_of_samples"]+1)
-                    
+
                     results_dict["number_of_samples"] = results_dict["number_of_samples"] + 1
 
     def start_capture(self):
         self.results_dict = {}
         self.results_dict["average_score"] = 0
         self.results_dict["number_of_samples"] = 1
+        self.stop_event = threading.Event()
 
         # Worker function that runs in parallel
 
@@ -86,6 +86,13 @@ class Gaze_Capture_Client:
 if __name__ == "__main__":
     gz_client = Gaze_Capture_Client()
     gz_client.start_capture()
-    time.sleep(10)  # Simulate a time-consuming operation
+    time.sleep(1)  # Simulate a time-consuming operation
+    print(gz_client.stop_capture())
+    print("stopped")
+    time.sleep(1)
+    gz_client.start_capture()
+    print("Restarted")
+
+    time.sleep(2)  # Simulate a time-consuming operation
     print(gz_client.stop_capture())
     del gz_client  # for a secure release of resources

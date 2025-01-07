@@ -1,4 +1,5 @@
 */.venv
+.zed
 /wav2vec2_checkpoints
 Code/run.sh
 Code/pronunciation.wav2

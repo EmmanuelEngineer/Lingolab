@@ -19,7 +19,7 @@ import socket
 import struct
 import pickle
 
-CENTER_PITCH = -1.34
+CENTER_PITCH = -6
 CENTER_YAW = 0
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -45,13 +45,13 @@ class Runner:
         self.show_template_model = self.config.demo.show_template_model
 
     def run(self, frame) -> None:
-        
-        
+
+
         #ok, frame = self.cap.read()
-        
+
         frame = cv2.resize(
             frame, (self.gaze_estimator.camera.width, self.gaze_estimator.camera.height))
-        
+
         undistorted = cv2.undistort(
             frame, self.gaze_estimator.camera.camera_matrix,
             self.gaze_estimator.camera.dist_coefficients)
@@ -211,7 +211,7 @@ class Runner:
         else:
             raise ValueError
         return eyes_angles
-    
+
 
 def find_nearest(array, value):
     array = np.asarray(array)
@@ -235,7 +235,7 @@ def main():
         frame = cv2.imread("./images/test2.jpg")
     else:
         #socket logic
-        
+
         HOST_IP = '127.0.0.1'
         HOST_PORT = 5002
 
@@ -247,11 +247,11 @@ def main():
         print("Waiting for connection...")
         conn, addr = server_socket.accept()
         print(f"Connection from: {addr}")
-        
+
         data = b""
         payload_size = struct.calcsize("L")
         #</one_time code >
-        
+
     while SPIN_SERVER:
         try:
             # Retrieve message size
@@ -307,7 +307,7 @@ def main():
             response_data = pickle.dumps(response_dict)
             response_length = struct.pack("L", len(response_data))
             conn.sendall(response_length + response_data)
-            
+
     conn.close()
     server_socket.close()
     cv2.destroyAllWindows()
