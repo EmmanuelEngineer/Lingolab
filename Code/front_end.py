@@ -7,6 +7,8 @@ import numpy as np
 import random
 import string
 from speechbrain.inference.interfaces import foreign_class
+from client import Gaze_Capture_Client
+from datetime import datetime
 
 # initialize CustomTkinter settings
 ctk.set_appearance_mode("System")
@@ -26,6 +28,9 @@ class LingoLab(ctk.CTk):
         self.current_exercise = 0
         self.sample_rate = 16000
         self.pause = True
+
+        # gaze detection initialization
+        self.gaze_processor = Gaze_Capture_Client()
 
         # initialize the model for pronunciation feedback
         self.pronunciation_processor = TextPronunciationFluency()
@@ -151,6 +156,11 @@ class LingoLab(ctk.CTk):
         self.populate()
 
     def populate(self):
+        # gaze detection operations
+        self.start_time = datetime.now()
+        print("START CAPTURE")
+        self.gaze_processor.start_capture()
+
         # update of the table of the done/remaining images
         self.progress_squares[self.current_exercise].configure(bg_color="blue")
         self.progress_squares[self.current_exercise].configure(text=str(self.current_exercise + 1))
@@ -211,6 +221,10 @@ class LingoLab(ctk.CTk):
         self.thread.start()
 
     def stop_recording(self):
+        # gaze detection operations
+        self.end_time = datetime.now()
+        self.gaze_processor_output = self.gaze_processor.stop_capture()
+
         self.recording = False
         if self.thread.is_alive():
             self.thread.join() 
@@ -297,6 +311,10 @@ class LingoLab(ctk.CTk):
         self.record_button.configure(text="Submit", fg_color=self.orig_back_color, hover_color=self.orig_hover_color)
 
     def submit_answer(self, event=None):
+        # gaze detection operations
+        self.end_time = datetime.now()
+        self.gaze_processor_output = self.gaze_processor.stop_capture()
+
         # the feedback text is initiated in the center
         self.feedback_label = ctk.CTkLabel(self.exercise_frame, text="", font=("Arial", 20))
 
@@ -336,6 +354,7 @@ class LingoLab(ctk.CTk):
         # add in its place the feedback text, after two seconds get to the next exercise
         self.feedback_label.grid(row=1, column=0, padx=20, pady=(0,15), sticky="ew")
         
+        print("SUBMITTED: ", self.gaze_processor_output)
         if(self.pause):
             self.pause_frame = ctk.CTkFrame(self.exercise_frame, corner_radius=10)
             self.pause_frame.grid(row=2, column=0, padx=20, pady=(0,15), sticky="s")

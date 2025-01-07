@@ -8,3 +8,5 @@ pronunciation.wav2
 audio.wav
 /Code/pytorch_mpiigaze
 /Code/__pycache__
+Code/wav2vec2_checkpoints
+Code/__pycache__/TextPronunciationFluency.cpython-310.pyc
