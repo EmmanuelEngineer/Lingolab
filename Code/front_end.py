@@ -27,7 +27,8 @@ class LingoLab(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
         self.current_exercise = 0
         self.sample_rate = 16000
-        self.pause = True
+        self.emotion_recognizer_pause = False
+        self.gaze_distance_treshold = 7
 
         # gaze detection initialization
         self.gaze_processor = Gaze_Capture_Client()
@@ -158,7 +159,6 @@ class LingoLab(ctk.CTk):
     def populate(self):
         # gaze detection operations
         self.start_time = datetime.now()
-        print("START CAPTURE")
         self.gaze_processor.start_capture()
 
         # update of the table of the done/remaining images
@@ -203,8 +203,14 @@ class LingoLab(ctk.CTk):
             self.record_button.grid(row=2, column=0, padx=20, pady=20, sticky="s")
         else:
             # sending to function submit_answer() in case of text
-            self.submit_button = ctk.CTkButton(self.exercise_frame, text="Submit", command=self.submit_answer)
+            self.submit_button = ctk.CTkButton(self.exercise_frame, text="Submit", command=self.pre_submit)
             self.submit_button.grid(row=2, column=0, padx=20, pady=20, sticky="s")
+
+    def pre_submit(self):
+        # gaze detection operations
+        self.gaze_processor_output = self.gaze_processor.stop_capture()
+        self.end_time = datetime.now()
+        self.submit_answer()
 
     def record_audio(self):
         while self.recording:
@@ -244,6 +250,11 @@ class LingoLab(ctk.CTk):
             except Exception as e:
                 emotion_feedback = f"Emotion analysis failed: {str(e)}"
                 print(emotion_feedback)
+        
+        if(text_lab[0] == "ang" or text_lab[0] == "sad"):
+            self.emotion_recognizer_pause = True
+        else:
+            self.emotion_recognizer_pause = False
 
         # results from the speech2text, speech2pronunciation, speech2fluency
         result = self.pronunciation_processor.transcribe_audio(file_path)
@@ -311,10 +322,6 @@ class LingoLab(ctk.CTk):
         self.record_button.configure(text="Submit", fg_color=self.orig_back_color, hover_color=self.orig_hover_color)
 
     def submit_answer(self, event=None):
-        # gaze detection operations
-        self.end_time = datetime.now()
-        self.gaze_processor_output = self.gaze_processor.stop_capture()
-
         # the feedback text is initiated in the center
         self.feedback_label = ctk.CTkLabel(self.exercise_frame, text="", font=("Arial", 20))
 
@@ -354,8 +361,10 @@ class LingoLab(ctk.CTk):
         # add in its place the feedback text, after two seconds get to the next exercise
         self.feedback_label.grid(row=1, column=0, padx=20, pady=(0,15), sticky="ew")
         
-        print("SUBMITTED: ", self.gaze_processor_output)
-        if(self.pause):
+        val = self.gaze_processor_output["average_score"]
+        diff = (self.end_time - self.start_time).seconds
+        print("Gaze acuracy: ", val, " - Seconds taken: ", diff)
+        if(self.emotion_recognizer_pause or (diff > 10 and val < self.gaze_distance_treshold)):
             self.pause_frame = ctk.CTkFrame(self.exercise_frame, corner_radius=10)
             self.pause_frame.grid(row=2, column=0, padx=20, pady=(0,15), sticky="s")
             self.pause_frame.grid_columnconfigure(0, weight=1)
