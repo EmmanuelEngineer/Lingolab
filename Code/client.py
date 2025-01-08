@@ -9,7 +9,7 @@ import copy
 
 
 class Gaze_Capture_Client:
-    def __init__(self, fps=11, cap=cv2.VideoCapture(0), server_ip='127.0.0.1', server_port=5002):
+    def __init__(self, fps=11, cap=cv2.VideoCapture(0), server_ip='127.0.0.1', server_port=5003):
         # Initialize socket
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((server_ip, server_port))

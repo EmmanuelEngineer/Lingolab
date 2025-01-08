@@ -19,6 +19,10 @@ import socket
 import struct
 import pickle
 
+
+HOST_IP = '127.0.0.1'
+HOST_PORT = 5003
+
 CENTER_PITCH = -6
 CENTER_YAW = 0
 logging.basicConfig(level=logging.INFO)
@@ -234,10 +238,7 @@ def main():
     if not SPIN_SERVER:
         frame = cv2.imread("./images/test2.jpg")
     else:
-        #socket logic
 
-        HOST_IP = '127.0.0.1'
-        HOST_PORT = 5002
 
         # Initialize socket <one_time code>
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
