@@ -26,6 +26,8 @@ class LingoLab(ctk.CTk):
         self.sentiment_scores = []
         self.gaze_scores = []
         self.log_exercise = True
+        self.sentiment_1 = 0
+        self.fluency_1 = 0
 
 
         # main window, a table of a sigle cell (1x1)
@@ -268,24 +270,24 @@ class LingoLab(ctk.CTk):
         print(log_entry)  # Log in console
 
         # Salva i dati per i grafici
-        self.fluency_scores.append(fluency if fluency != "N/A" else 0)
+        self.fluency_scores.append(fluency)
         self.accuracy_scores.append(1 if accuracy else 0)
-        self.sentiment_scores.append(sentiment if sentiment != "N/A" else "neutral")
+        self.sentiment_scores.append(sentiment)
         self.gaze_scores.append(gaze if gaze != "N/A" else 0)
 
 
 
     def transcribe_audio(self, file_path):
         # Emotion recognition part
-        sentiment = "Unknown"
+        self.sentiment_1 = "Unknown"
         if self.emotion_recognizer:
             try:
                 out_prob, score, index, text_lab = self.emotion_recognizer.classify_file(file_path)
-                sentiment = text_lab
+                self.sentiment_1  = text_lab[0]
                 emotion_feedback = f"Emotion detected: {text_lab}"
                 print(emotion_feedback)
             except Exception as e:
-                sentiment = "Error"
+                self.sentiment_1  = "Error"
                 emotion_feedback = f"Emotion analysis failed: {str(e)}"
                 print(emotion_feedback)
 
@@ -301,16 +303,16 @@ class LingoLab(ctk.CTk):
         fluencies = self.pronunciation_processor.format_fluency(result)
 
         # Calculate fluency and accuracy
-        fluency_score = sum(fluencies[1:]) / len(fluencies[1:]) if len(fluencies) > 1 else 0
+        self.fluency_1 = sum(fluencies[1:]) / len(fluencies[1:]) if len(fluencies) > 1 else 0
         self.user_answer = result['text'].strip().lower()
         self.user_answer = self.user_answer.translate(str.maketrans('', '', string.punctuation))
         correct_answer = self.current_exercise_list[self.current_exercise][1].strip().lower()
-        accuracy = self.user_answer == correct_answer
+        self.accuracy = self.user_answer == correct_answer
 
         # Log statistics
         gaze_score = self.gaze_processor_output.get("average_score", "N/A") if hasattr(self, "gaze_processor_output") else "N/A"
         exercise_text = self.current_exercise_list[self.current_exercise][0]
-        log_entry = (
+        """log_entry = (
             f"Exercise {self.current_exercise + 1}: {exercise_text}\n"
             f"  Correct Answer: {correct_answer}\n"
             f"  User Answer: {self.user_answer}\n"
@@ -320,7 +322,7 @@ class LingoLab(ctk.CTk):
             f"  Gaze Score: {gaze_score}\n"
             f"--------------------------------------------"
         )
-        print(log_entry)  # You can redirect this to a file if needed
+        print(log_entry)  # You can redirect this to a file if needed"""
 
         # Inserting the table head
         words.insert(0, "Speech:")
@@ -365,11 +367,10 @@ class LingoLab(ctk.CTk):
                 color = "blue"
                 text = "low"
             ctk.CTkLabel(self.answer_entry, text=text, text_color=color).grid(row=2, column=index, padx=0, pady=0)
-
         # Set the recording button back to normal
         self.record_button.configure(text="Submit", fg_color=self.orig_back_color, hover_color=self.orig_hover_color)
 
-    def submit_answer(self, event=None,to_log=False):
+    def submit_answer(self, event=None,to_log=True):
             print(f"log?:{to_log}")
             # the feedback text is initiated in the center
             self.feedback_label = ctk.CTkLabel(self.exercise_frame, text="", font=("Arial", 20))
@@ -382,7 +383,11 @@ class LingoLab(ctk.CTk):
             if correct_answer == "speaking":
                 speaking = True
                 correct_answer = self.current_exercise_list[self.current_exercise][0].strip().lower()
+                sentiment = self.sentiment_1
+                fluency_score = self.fluency_1
             else:
+                sentiment = "N/A"
+                fluency_score = "N/A"  # Fluency is not calculated for text exercises
                 self.user_answer = self.answer_entry.get().strip().lower()
                 self.user_answer = self.user_answer.translate(str.maketrans('', '', string.punctuation))
 
@@ -406,8 +411,7 @@ class LingoLab(ctk.CTk):
 
             # Gaze and sentiment data
             gaze_score = self.gaze_processor_output["average_score"] if self.gaze_processor_output else "N/A"
-            sentiment = "N/A"
-            fluency_score = "N/A"  # Fluency is not calculated for text exercises
+
 
             # Log statistics
             if to_log:
@@ -484,12 +488,16 @@ class LingoLab(ctk.CTk):
         """
         Generate and display graphs for the exercise statistics.
         """
+
+        stri = f"{self.fluency_scores}\n{self.accuracy_scores}\n{self.sentiment_scores}\n{self.gaze_scores}\n"
+        print(stri)
         # Create a new figure
         plt.figure(figsize=(10, 6))
 
         # Fluency Graph
         plt.subplot(2, 2, 1)
         plt.plot(self.fluency_scores, marker='o')
+        plt.yticks([0,1])
         plt.title("Fluency Scores")
         plt.xlabel("Exercise")
         plt.ylabel("Score")
