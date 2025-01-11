@@ -488,6 +488,9 @@ class LingoLab(ctk.CTk):
         """
         Generate and display graphs for the exercise statistics.
         """
+        rounded = []
+        for x in self.fluency_scores:
+            rounded.append(np.round(x,2) if x!="N/A" else 0)
 
         stri = f"{self.fluency_scores}\n{self.accuracy_scores}\n{self.sentiment_scores}\n{self.gaze_scores}\n"
         print(stri)
@@ -496,7 +499,7 @@ class LingoLab(ctk.CTk):
 
         # Fluency Graph
         plt.subplot(2, 2, 1)
-        plt.plot(self.fluency_scores, marker='o')
+        plt.plot(rounded, marker='o')
         plt.yticks([0,1])
         plt.title("Fluency Scores")
         plt.xlabel("Exercise")
